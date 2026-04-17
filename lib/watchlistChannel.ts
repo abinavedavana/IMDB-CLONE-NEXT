@@ -9,12 +9,15 @@ type MessageHandler = (msg: WatchlistChannelMessage) => void;
 
 let channel: BroadcastChannel | null = null;
 
-export function getWatchlistChannel(): BroadcastChannel | null {
-  if (typeof window === "undefined") return null;
-  if (typeof BroadcastChannel === "undefined") return null;
+export function getWatchlistChannel() {
+  if (typeof window === "undefined") return null; // ✅ server safety
+
+  if (!("BroadcastChannel" in window)) return null; // ✅ browser support check
+
   if (!channel) {
     channel = new BroadcastChannel("watchlist-sync");
   }
+
   return channel;
 }
 
