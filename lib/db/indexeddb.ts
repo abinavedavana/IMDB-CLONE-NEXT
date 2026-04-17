@@ -1,3 +1,5 @@
+"use client";
+
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import type { WatchlistItem, SyncOperation } from "../schemas/watchlist";
 

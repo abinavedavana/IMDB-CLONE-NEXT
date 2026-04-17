@@ -1,3 +1,6 @@
+"use client";
+
+
 import { getDB } from "../db/indexeddb";
 import {
   WatchlistItem,
