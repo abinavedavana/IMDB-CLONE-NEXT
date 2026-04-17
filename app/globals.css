@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+/* ─── CSS Variables — all 3 themes ─────────────────────────────────────────── */
+
+:root,
+.theme-dark {
+  --bg-primary: #000000;
+  --bg-secondary: #0f0f0f;
+  --bg-tertiary: #1a1a2e;
+  --bg-card: #0d1117;
+  --text-primary: #ffffff;
+  --text-secondary: #a0aec0;
+  --text-muted: #4a5568;
+  --accent: #f6c90e;
+  --accent-hover: #e2b800;
+  --border: rgba(255, 255, 255, 0.1);
+  --overlay: rgba(0, 0, 0, 0.7);
+  --nav-bg: rgba(0, 0, 0, 0.8);
+  color-scheme: dark;
+}
+
+.theme-light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #a5a6a8;
+  --bg-tertiary: #969799;
+  --bg-card: #ffffff;
+  --text-primary: #070707;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --accent: #d97706;
+  --accent-hover: #b45309;
+  --border: rgba(0, 0, 0, 0.1);
+  --overlay: rgba(135, 132, 132, 0.7);
+  --nav-bg: rgba(255, 255, 255, 0.9);
+  color-scheme: light;
+}
+
+.theme-high-contrast {
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --bg-tertiary: #000000;
+  --bg-card: #000000;
+  --text-primary: #ffffff;
+  --text-secondary: #ffff00;
+  --text-muted: #00ffff;
+  --accent: #ffff00;
+  --accent-hover: #ffee00;
+  --border: #ffffff;
+  --overlay: rgba(0, 0, 0, 0.9);
+  --nav-bg: #000000;
+  color-scheme: dark;
+}
+
+/* ─── Base styles using CSS variables ──────────────────────────────────────── */
+
+html {
+  /* Prevent CLS on theme switch */
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  /* Springy color transitions — skipped if reduced motion */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Theme-aware utility classes ───────────────────────────────────────────── */
+
+.bg-theme-primary { background-color: var(--bg-primary); }
+.bg-theme-secondary { background-color: var(--bg-secondary); }
+.bg-theme-card { background-color: var(--bg-card); }
+.text-theme-primary { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-muted { color: var(--text-muted); }
+.border-theme { border-color: var(--border); }
+.accent { color: var(--accent); }
+
+
+/* Override hardcoded black backgrounds in light mode */
+.theme-light main,
+.theme-light .bg-black {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.theme-light .bg-slate-900 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.theme-light .bg-slate-800,
+.theme-light .bg-gray-800,
+.theme-light .bg-gray-900 {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.theme-light .text-white {
+  color: var(--text-primary) !important;
+}
+
+.theme-light .text-gray-300,
+.theme-light .text-gray-400 {
+  color: var(--text-secondary) !important;
+}
+
+.theme-light nav {
+  background-color: var(--nav-bg) !important;
+  backdrop-filter: blur(12px);
+}
