@@ -1,4 +1,4 @@
-
+export const dynamic = 'force-dynamic';
 
 import { Suspense } from "react";
 import Image from "next/image";
@@ -126,8 +126,13 @@ async function Cast({ id }: { id: string }) {
 async function ReviewSystemWrapper({ id }: { id: string }) {
   let initialReviews = [];
   try {
+    // Use the Vercel URL or fallback correctly
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : "http://localhost:3000";
+      
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/api/reviews?movieId=${id}`,
+      `${baseUrl}/api/reviews?movieId=${id}`,
       { next: { revalidate: 30, tags: [`reviews-${id}`] } }
     );
     if (res.ok) initialReviews = await res.json();
