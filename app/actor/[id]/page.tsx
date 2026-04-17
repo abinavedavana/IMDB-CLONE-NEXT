@@ -1,6 +1,5 @@
 
 
-export const runtime = "edge";
 export const revalidate = 3600;
 
 import Link from "next/link";
@@ -39,32 +38,46 @@ async function getActorData(id: string) {
       },
     };
 
-    const [actorRes, creditsRes, socialRes] = await Promise.all([
-      fetchWithRetry(
-        `https://api.themoviedb.org/3/person/${id}?api_key=${apiKey}`,
-        fetchOptions
-      ),
-      fetchWithRetry(
-        `https://api.themoviedb.org/3/person/${id}/movie_credits?api_key=${apiKey}`,
-        fetchOptions
-      ),
-      fetchWithRetry(
-        `https://api.themoviedb.org/3/person/${id}/external_ids?api_key=${apiKey}`,
-        fetchOptions
-      ),
-    ]);
+    
+  const [actorRes, creditsRes, socialRes, translationsRes] = await Promise.all([
+    fetchWithRetry(
+      `https://api.themoviedb.org/3/person/${id}?api_key=${apiKey}`,
+      fetchOptions
+    ),
+    fetchWithRetry(
+      `https://api.themoviedb.org/3/person/${id}/movie_credits?api_key=${apiKey}`,
+      fetchOptions
+    ),
+    fetchWithRetry(
+      `https://api.themoviedb.org/3/person/${id}/external_ids?api_key=${apiKey}`,
+      fetchOptions
+    ),
+    fetchWithRetry(
+      `https://api.themoviedb.org/3/person/${id}/translations?api_key=${apiKey}`,
+      fetchOptions
+    ),
+  ]);
 
     if (!actorRes.ok) return null;
 
     const actor = await actorRes.json();
     const creditsData = creditsRes.ok ? await creditsRes.json() : null;
     const socialData = socialRes.ok ? await socialRes.json() : null;
+    const translationsData = translationsRes.ok ? await translationsRes.json() : null;
 
     const movies = creditsData?.cast || [];
     const awards =
       movies?.filter((m: any) => m.vote_average >= 7)?.slice(0, 5) || [];
 
-    return { actor, movies, awards, socialData };
+    const alternateNames = translationsData?.translations
+      ?.filter((t: any) => t.data?.name && t.data.name !== actor.name)
+      ?.slice(0, 5)
+      ?.map((t: any) => ({
+        language: t.english_name,
+        name: t.data.name,
+      })) || [];
+
+    return { actor, movies, awards, socialData, alternateNames };
   } catch {
     return null;
   }
@@ -113,7 +126,7 @@ export default async function ActorPage({ params }: Props) {
     );
   }
 
-  const { actor, movies, awards, socialData } = data;
+  const { actor, movies, awards, socialData, alternateNames } = data;
 
   const socials = [
     {
@@ -153,6 +166,7 @@ export default async function ActorPage({ params }: Props) {
             "@context": "https://schema.org",
             "@type": "Person",
             name: actor.name,
+            alternateName: alternateNames.map((a: any) => a.name),
             description: actor.biography,
             image: actor.profile_path
               ? `https://image.tmdb.org/t/p/original${actor.profile_path}`
@@ -236,6 +250,19 @@ export default async function ActorPage({ params }: Props) {
                 <p className="text-gray-400">Popularity</p>
                 <p>{actor.popularity}</p>
               </div>
+              {alternateNames.length > 0 && (
+                <div>
+                  <p className="text-gray-400">Also Known As</p>
+                  <div className="space-y-1 mt-1">
+                    {alternateNames.map((alt: any) => (
+                      <div key={alt.language} className="flex justify-between">
+                        <span className="text-xs text-gray-500">{alt.language}</span>
+                        <span className="text-sm">{alt.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
