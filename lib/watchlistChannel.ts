@@ -11,7 +11,7 @@ let channel: BroadcastChannel | null = null;
 
 export function getWatchlistChannel(): BroadcastChannel | null {
   if (typeof window === "undefined") return null; // ← add this line
-  
+  if (typeof BroadcastChannel === "undefined") return null;
   if (!channel) {
     channel = new BroadcastChannel("watchlist-sync");
   }
